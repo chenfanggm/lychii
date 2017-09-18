@@ -228,4 +228,4 @@ module.exports = LychiiBot
 
 // expose API
 module.exports.Plugin = require('./libs/Plugin')
-module.exports.MessageUtils = require('lychii-slack').messageUtils
+module.exports.MessageUtils = require('lychii-slack').MessageUtils
