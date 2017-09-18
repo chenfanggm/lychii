@@ -63,26 +63,30 @@ class LychiiBot {
     this.client.on(LychiiEvent.REACTION_ADDED, this.onReactionAdded)
     this.client.on(LychiiEvent.DISCONNECTED, this.onDisconnected)
 
-    // init plugins
-    this.loadPlugins()
+    // init default plugins
+    this.loadPlugins(path.resolve(__dirname, '../plugins'))
+    // init user defined plugins
+    if (this.config.pluginDirPath)
+      this.loadPlugins(this.config.pluginDirPath)
 
     // go!
     this.client.start()
   }
 
-  loadPlugins() {
-    const plugins = require('./plugins')
+  loadPlugins(pluginDirPath) {
+    const plugins = require(pluginDirPath)
+    // load plugin from defined module.exports, if defined
+    // if not, load from dir in plugins path
     if (plugins) {
       plugins.map((plugin) => {
         this.registerPlugin(plugin)
       })
     } else {
-      const pluginsDirPath = path.resolve(__dirname, './plugins')
-      fs.readdir(pluginsDirPath, (err, files) => {
+      fs.readdir(pluginDirPath, (err, files) => {
         if (err) throw err
         if (files) {
           files.map((file) => {
-            const pluginFilePath = path.resolve(pluginsDirPath, file)
+            const pluginFilePath = path.resolve(pluginDirPath, file)
             if (fs.lstatSync(pluginFilePath).isDirectory()) {
               const plugin = require(pluginFilePath)
               if (plugin) {
