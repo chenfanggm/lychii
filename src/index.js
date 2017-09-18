@@ -7,6 +7,7 @@ const LychiiSlackAdapter = require('lychii-slack')
 const config = require('./config')
 const debug = require('debug')('app:bot')
 
+
 // ----------------------------------
 // Lychii Bot
 // ----------------------------------
@@ -225,4 +226,6 @@ class LychiiBot {
 
 module.exports = LychiiBot
 
-
+// expose API
+module.exports.Plugin = require('./libs/Plugin')
+module.exports.MessageUtils = require('lychii-slack').messageUtils
