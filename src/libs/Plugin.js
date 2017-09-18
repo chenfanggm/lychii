@@ -11,10 +11,8 @@ class Plugin {
         handler
       })
     } else if (handler.handler) {
-      this.processors.push({
-        regex,
-        ...handler
-      })
+      const processor = Object.assign({}, { regex }, handler)
+      this.processors.push(processor)
     }
   }
 
