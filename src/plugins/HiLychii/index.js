@@ -7,7 +7,6 @@ class HiJelly extends Plugin {
 
   init() {
     this.register(/^(hi|hello)/i, {
-      useRaw: true,
       handler: (metaMsg, matches) => {
         this.client.reply(`Hello!`, metaMsg)
       }
