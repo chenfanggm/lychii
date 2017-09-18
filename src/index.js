@@ -64,7 +64,7 @@ class LychiiBot {
     this.client.on(LychiiEvent.DISCONNECTED, this.onDisconnected)
 
     // init default plugins
-    this.loadPlugins(path.resolve(__dirname, '../plugins'))
+    this.loadPlugins(path.resolve(__dirname, './plugins'))
     // init user defined plugins
     if (this.config.pluginDirPath)
       this.loadPlugins(this.config.pluginDirPath)
