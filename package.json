@@ -1,6 +1,6 @@
 {
   "name": "lychii",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "lychii chatbot framework",
   "main": "src/index.js",
   "scripts": {
@@ -21,9 +21,9 @@
   "dependencies": {
     "bluebird": "^3.5.0",
     "debug": "^3.0.1",
-    "lychii-slack": "0.0.2",
+    "lychii-slack": "0.0.3",
     "moment": "^2.18.1",
-    "mongoose": "^4.11.11"
+    "mongoose": "^4.11.12"
   },
   "devDependencies": {
     "better-npm-run": "^0.1.0"
