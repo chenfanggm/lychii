@@ -221,7 +221,7 @@ class LychiiBot {
   _processMessage(metaMsg) {
     debug(`processing: ${metaMsg.text}`)
     this.plugins.map((plugin) => {
-      plugin._processMessage(metaMsg)
+      plugin.processMessage(metaMsg)
     })
   }
 
