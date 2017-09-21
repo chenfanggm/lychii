@@ -21,11 +21,11 @@ class LychiiBot {
     this.defaultChannel = null
     this.plugins = []
     this.config = Object.assign({}, config, options)
-    this.onAuthenticated = this.onAuthenticated.bind(this)
-    this.onConnected = this.onConnected.bind(this)
-    this.onIncomingMessage = this.onIncomingMessage.bind(this)
-    this.onReactionAdded = this.onReactionAdded.bind(this)
-    this.onDisconnected = this.onDisconnected.bind(this)
+    this._onAuthenticated = this._onAuthenticated.bind(this)
+    this._onConnected = this._onConnected.bind(this)
+    this._onIncomingMessage = this._onIncomingMessage.bind(this)
+    this._onReactionAdded = this._onReactionAdded.bind(this)
+    this._onDisconnected = this._onDisconnected.bind(this)
     this.registerPlugin = this.registerPlugin.bind(this)
   }
 
@@ -58,17 +58,19 @@ class LychiiBot {
 
     // init event handler
     const LychiiEvent = LychiiSlackAdapter.EVENTS
-    this.client.on(LychiiEvent.AUTHENTICATED, this.onAuthenticated)
-    this.client.on(LychiiEvent.CONNECTED, this.onConnected)
-    this.client.on(LychiiEvent.MESSAGE, this.onIncomingMessage)
-    this.client.on(LychiiEvent.REACTION_ADDED, this.onReactionAdded)
-    this.client.on(LychiiEvent.DISCONNECTED, this.onDisconnected)
+    this.client.on(LychiiEvent.AUTHENTICATED, this._onAuthenticated)
+    this.client.on(LychiiEvent.CONNECTED, this._onConnected)
+    this.client.on(LychiiEvent.MESSAGE, this._onIncomingMessage)
+    this.client.on(LychiiEvent.REACTION_ADDED, this._onReactionAdded)
+    this.client.on(LychiiEvent.DISCONNECTED, this._onDisconnected)
 
-    // init default plugins
+    // load default plugins
     this.loadPlugins(path.resolve(__dirname, './plugins'))
-    // init user defined plugins
+    // load user defined plugins
     if (this.config.pluginDirPath)
       this.loadPlugins(this.config.pluginDirPath)
+    // init plugins
+    this._initPlugins()
 
     // go!
     this.client.start()
@@ -105,13 +107,18 @@ class LychiiBot {
 
     const pluginInstance = new plugin(this)
     this.plugins.push(pluginInstance)
-
-    if (pluginInstance.init && typeof pluginInstance.init === 'function') {
-      pluginInstance.init()
-    }
   }
 
-  onAuthenticated(identity) {
+  _initPlugins() {
+    if (this.plugins)
+      this.plugins.map((plugin) => {
+        if (plugin.init && typeof plugin.init === 'function') {
+          plugin.init()
+        }
+      })
+  }
+
+  _onAuthenticated(identity) {
     this.self = identity.self
     this.team = identity.team
     this.users = identity.users
@@ -134,7 +141,7 @@ class LychiiBot {
     debug(`default channel: ${this.defaultChannel.name}`)
   }
 
-  onConnected() {
+  _onConnected() {
     const user = this.client.rtm.dataStore
       .getUserById(this.client.rtm.activeUserId)
     const team = this.client.rtm.dataStore
@@ -144,7 +151,7 @@ class LychiiBot {
     this.client.send(`Hello! I'm ${this.self.name}`, this.defaultChannel)
   }
 
-  onDisconnected() {
+  _onDisconnected() {
     if (this.config.autoReconnect) {
       //TODO: add reconnect handler
       debug('disconnected, waiting for reconnect')
@@ -155,11 +162,11 @@ class LychiiBot {
     }
   }
 
-  onIncomingMessage(metaMsg) {
+  _onIncomingMessage(metaMsg) {
     // filter accepted message
     const selfRecognizeRegex = new RegExp(`^(@?${this.self.name}\\s)`, 'i')
-    if(!this.isAcceptable(metaMsg, selfRecognizeRegex)) return
-    this.trimMessage(metaMsg, selfRecognizeRegex)
+    if(!this._isAcceptable(metaMsg, selfRecognizeRegex)) return
+    this._trimMessage(metaMsg, selfRecognizeRegex)
 
     let { text, user, bot, channel, subtype, topic } = metaMsg
 
@@ -185,12 +192,12 @@ class LychiiBot {
       case 'bot_message':
       default:
         debug(`received from ${user.name} in channel ${channel.name}: ${text}`)
-        this.processMessage(metaMsg)
+        this._processMessage(metaMsg)
         break
     }
   }
 
-  isAcceptable(metaMsg, selfRecognizeRegex) {
+  _isAcceptable(metaMsg, selfRecognizeRegex) {
     let { text, user, bot } = metaMsg
     // ignore that sent from self
     if (user && user.id === this.self.id) return false
@@ -205,20 +212,20 @@ class LychiiBot {
 
   }
 
-  trimMessage(metaMsg, selfRecognizeRegex) {
+  _trimMessage(metaMsg, selfRecognizeRegex) {
     metaMsg.text = metaMsg.text.trim()
     // clean self annotation
     metaMsg.text = metaMsg.text.replace(selfRecognizeRegex, '')
   }
 
-  processMessage(metaMsg) {
+  _processMessage(metaMsg) {
     debug(`processing: ${metaMsg.text}`)
     this.plugins.map((plugin) => {
-      plugin.processMessage(metaMsg)
+      plugin._processMessage(metaMsg)
     })
   }
 
-  onReactionAdded(reaction) {
+  _onReactionAdded(reaction) {
     debug('reaction added: ', reaction)
   }
 
