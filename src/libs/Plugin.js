@@ -1,5 +1,6 @@
 class Plugin {
   constructor(bot) {
+    this.bot = bot
     this.client = bot.client
     this.processors = []
   }
