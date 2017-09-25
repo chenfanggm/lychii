@@ -127,6 +127,10 @@ class LychiiBot {
       if (channel.name)
         this.channels[channel.name] = channel
     })
+    identity.groups && identity.groups.map((group) => {
+      if (group.name)
+        this.channels[group.name] = group
+    })
 
     // get bot_id
     for (let i = 0; i < this.users.length; i++) {
