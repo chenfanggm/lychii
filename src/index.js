@@ -18,6 +18,7 @@ class LychiiBot {
     this.self = null
     this.team = null
     this.users = null
+    this.channels = {}
     this.defaultChannel = null
     this.plugins = []
     this.config = Object.assign({}, config, options)
@@ -122,6 +123,10 @@ class LychiiBot {
     this.self = identity.self
     this.team = identity.team
     this.users = identity.users
+    identity.channels && identity.channels.map((channel) => {
+      if (channel.name)
+        this.channels[channel.name] = channel
+    })
 
     // get bot_id
     for (let i = 0; i < this.users.length; i++) {
