@@ -24,11 +24,12 @@ class Plugin {
     this.processors.map((processor) => {
       const matches = processor.useRaw ? rawMessage.match(processor.regex) : message.match(processor.regex)
       if (matches) {
+        const splits =  rawMessage.split(' ')
         if (processor.pre && typeof processor.pre === 'function') {
-          processor.pre(metaMsg, matches)
+          processor.pre(metaMsg, matches, splits)
         }
 
-        processor.handler(metaMsg, matches)
+        processor.handler(metaMsg, matches, splits)
       }
     })
   }
