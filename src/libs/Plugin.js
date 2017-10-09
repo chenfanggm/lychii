@@ -24,7 +24,7 @@ class Plugin {
     this.processors.map((processor) => {
       const matches = processor.useRaw ? rawMessage.match(processor.regex) : message.match(processor.regex)
       if (matches) {
-        const splits =  rawMessage.split(' ')
+        const splits =  message.split(' ')
         if (processor.pre && typeof processor.pre === 'function') {
           processor.pre(metaMsg, matches, splits)
         }
